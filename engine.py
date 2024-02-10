@@ -1,4 +1,4 @@
-import pygame, math, json, os
+import pygame, math, json, os, random
 
 windowWidth = 500
 windowHeight = 500
@@ -9,7 +9,7 @@ mouseXGrid = 0
 mouseYGrid = 0
 mouseType = -1
 mouseDown = False
-allCells = [[-1 for i in range(50)] for x in range(50)]  # 2d 50x50 array
+allCells = [[[-1] for i in range(50)] for x in range(50)]  # 2d 50x50 array
 window = pygame.display.set_mode((windowWidth, windowHeight))  # pygame.RESIZABLE
 gridimg = pygame.image.load("grid.png")
 gridimg = pygame.transform.scale(gridimg, (10, 10))
@@ -24,6 +24,8 @@ todoimg = pygame.transform.scale(todoimg, (10, 10))
 doneimg = pygame.image.load("done.png")
 doneimg = pygame.transform.scale(doneimg, (10, 10))
 
+randmode = False
+
 def drawgrid():
     global gridAmntView
     gridAmntView = 0
@@ -34,7 +36,7 @@ def drawgrid():
                 gridimg.set_alpha(100)
             else:
                 gridimg.set_alpha(10)
-            drawcell(x*10, y*10, cell)
+            drawcell(x*10, y*10, cell[0])
 
 def drawcell(x: int, y: int, cell: int):
     match cell:
@@ -70,14 +72,22 @@ while True:
         if event.type == pygame.KEYDOWN:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LCTRL] and keys[pygame.K_c]:
-                allCells = [[-1 for i in range(50)] for x in range(50)]
-            if keys[pygame.K_LALT] and keys[pygame.K_c]:
-                allCells = [[mouseType for i in range(50)] for x in range(50)]
+                allCells = [[[-1] for i in range(50)] for x in range(50)]
             if keys[pygame.K_LCTRL] and keys[pygame.K_s]:
-                allCells  # save to json file ig... ＼（〇_ｏ）／
-        
+                with open("save.json", "w") as a:
+                    json.dump(allCells, a)
+                print("Saved!")
+            if keys[pygame.K_LCTRL] and keys[pygame.K_o]:
+                with open("save.json", "r") as a:
+                    allCells = json.load(a)
+                print("Save Loaded!")
+            if keys[pygame.K_LCTRL] and keys[pygame.K_BACKQUOTE]:
+                randmode = False if randmode else True
+                print("randmode:",randmode)
+    if randmode:
+        allCells[random.randint(0,49)][random.randint(0,49)][0] = random.randint(0,4)
     if mouseDown:
-        allCells[mouseYGrid][mouseXGrid] = mouseType
+        allCells[mouseYGrid][mouseXGrid][0] = mouseType
     window.fill((255,255,255))
     drawgrid()
     pygame.display.set_caption(f'{mouseType} x{mouseXGrid} y{mouseYGrid}')
