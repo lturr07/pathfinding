@@ -191,6 +191,9 @@ while True:
         solve = findNextTodo()
         if solve[0] == -1:
             createTodo(startX, startY)
+            if findNextTodo()[0] == -1:
+                solveMode = False
+                print("Unsolvable!")
         else:
             createTodo(solve[0], solve[1])
     if mouseDown and mouseYGrid <= 49 and mouseXGrid <= 49 and not solveMode:
