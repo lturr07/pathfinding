@@ -1,4 +1,4 @@
-import pygame, math, json, os, random
+import pygame, math, json
 
 windowWidth = 500
 windowHeight = 600
@@ -166,10 +166,12 @@ while True:
                 # Clean save for dupe end or starts
                 temp = findCellType(1)
                 deleteCellType(1)
-                allCells[temp[0]][temp[1]][0] = 1
+                if temp[0] != -1:
+                    allCells[temp[1]][temp[0]][0] = 1
                 temp = findCellType(2)
                 deleteCellType(2)
-                allCells[temp[0]][temp[1]][0] = 2
+                if temp[0] != -1:
+                    allCells[temp[1]][temp[0]][0] = 2
                 del temp
                 print("Save Loaded!")
             if keys[pygame.K_LCTRL] and keys[pygame.K_BACKQUOTE]:
