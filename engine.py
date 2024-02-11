@@ -1,4 +1,4 @@
-import pygame, math, json
+import pygame, math, json, random
 
 windowWidth = 500
 windowHeight = 600
@@ -49,11 +49,9 @@ def findNextTodo() -> tuple[int, int]:
                     lowest = cell[1]
                     lowest_heuristic = cell[2]
                     lX, lY = x, y
-                    # print(x, y, lowest, lowest_heuristic)
                 elif cell[1] == lowest and cell[2] < lowest_heuristic:
                     lowest_heuristic = cell[2]
                     lX, lY = x, y
-    # print(lowest, lowest_heuristic)
     return lX, lY
 
 def createTodo(x: int, y: int) -> None:
@@ -82,7 +80,6 @@ def createTodo(x: int, y: int) -> None:
                 temp2 = 10
             if (allCells[y+_y][x+_x][0] == 3 and temp1+temp2 < allCells[y+_y][x+_x][1]) or allCells[y+_y][x+_x][0] == -1:
                 allCells[y+_y][x+_x] = [3, temp1+temp2, temp1, temp2, x, y]
-            # print(allCells[y+_y][x+_x])
 
 def findCellType(cellType: int) -> tuple[int, int]:
     """only finds first occurence and returns (-1, -1) if not found"""
@@ -149,18 +146,22 @@ while True:
         if event.type == pygame.KEYDOWN:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LCTRL] and keys[pygame.K_c]:
+                solveMode = False
                 allCells = [[[-1] for i in range(50)] for x in range(50)]
                 print("Cleared!")
             if keys[pygame.K_LALT] and keys[pygame.K_c]:
+                solveMode = False
                 deleteCellType(3)
                 deleteCellType(4)
                 deleteCellType(5)
                 print("Cleared Solution!")
             if keys[pygame.K_LCTRL] and keys[pygame.K_s]:
+                solveMode = False
                 with open("save.json", "w") as a:
                     json.dump(allCells, a)
                 print("Saved!")
             if keys[pygame.K_LCTRL] and keys[pygame.K_o]:
+                solveMode = False
                 with open("save.json", "r") as a:
                     allCells = json.load(a)
                 # Clean save for dupe end or starts
@@ -181,10 +182,13 @@ while True:
                     solveMode = False if solveMode else True
                     print("Solve Mode:",solveMode)
                 else:
-                    print("Both an end and start are needed")            
+                    print("Both an end and start are needed")  
+            if keys[pygame.K_LCTRL] and keys[pygame.K_r]:
+                solveMode = False
+                allCells = list(map(lambda y: list(map(lambda x: [0] if random.random() > 0.70 else [-1], y)), allCells))
+                print("Randomified!")        
     if solveMode:
         solve = findNextTodo()
-        # print(solve)
         if solve[0] == -1:
             createTodo(startX, startY)
         else:
